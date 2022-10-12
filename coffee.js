@@ -11,12 +11,12 @@ WDAIntegration.onLoaded = (session, theme, locale, extra) => {
     WDAIntegration.startCall({ targets: ['9300'], requestedModalities: ['video'] })
   })
 
-  WDAIntegration._sendMessage(COFFEE_ENTER)
+  WDAIntegration._sendMessage(COFFEE_ENTER);
 };
 
 WDAIntegration.onUnLoaded = () => {
   WDAIntegration.openLeftPanel();
-  WDAIntegration._sendMessage(COFFEE_EXIT)
+  WDAIntegration._sendMessage(COFFEE_EXIT);
 };
 
 WDAIntegration.initialize();
