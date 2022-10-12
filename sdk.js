@@ -17,14 +17,15 @@ const EVENT_ON_LOGOUT = 'wazo/EVENT_ON_LOGOUT';
 const EVENT_WS_MESSAGE = 'wazo/EVENT_WS_MESSAGE';
 
 class WDAIntegration extends Integration {
-  onLoaded = (session, theme, locale, extra) => {}
-  onLogout = ()  => {}
-  onCallIncoming = (call) =>  {}
-  onCallMade = (call) => {}
-  onCallAnswered = (call) => {}
-  onCallHangedUp = (call) => {}
-  onUnHandledEvent = (event) => {}
-  onWebsocketMessage = (message) => {}
+  onLoaded = (session, theme, locale, extra) => { }
+  onLogout = () => { }
+  onCallIncoming = (call) => { }
+  onCallMade = (call) => { }
+  onCallAnswered = (call) => { }
+  onCallHangedUp = (call) => { }
+  onUnHandledEvent = (event) => { }
+  onWebsocketMessage = (message) => { }
+  onRouteChanged = (message) => { }
 
   initialize() {
     super.initialize();

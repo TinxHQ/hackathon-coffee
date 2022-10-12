@@ -1,39 +1,13 @@
 import WDAIntegration from './sdk.js';
-let modal;
-
-const displayCallInformation = call => {
-  modal = document.createElement('div');
-  modal.style.width = '300px';
-  modal.style.height = '400px';
-  modal.style.position = 'absolute';
-  modal.style.right = '0';
-  modal.style.bottom = '0';
-  modal.style.padding = '10px';
-  modal.style.background = 'white';
-  modal.style.border = '1px solid #aaa';
-  modal.innerHTML = `<h1>Call with ${call.number}</h1><h2>${call.displayName}</h2>`;
-
-  document.body.appendChild(modal);
-};
-
-const hideCallInformation = () => {
-  if (!modal) {
-    return;
-  }
-  console.log('modal', modal);
-  modal.parentNode.removeChild(modal);
-  modal = null;
-};
+let tmpColor;
 
 
 WDAIntegration.onLoaded = (session, theme, locale, extra) => {
-  console.log('background onLoaded', { session, theme, locale, extra });
-
-  // displayCallInformation({ number: 123 });
+  // console.log('background onLoaded', { session, theme, locale, extra });
 };
 
 WDAIntegration.onRouteChanged = (location, action) => {
-  // console.log('background onRouteChanged', { location, action });
+  console.log('background onRouteChanged', { location, action });
 };
 
 WDAIntegration.onCallIncoming = call => {
@@ -53,7 +27,25 @@ WDAIntegration.onCallHangedUp = call => {
 };
 
 WDAIntegration.onWebsocketMessage = (message) => {
-    console.log(message);
+  console.log(message);
 };
+
+WDAIntegration.onUnHandledEvent = event => {
+  console.log('event', event.data.type)
+  const [element] = document.getElementsByClassName('navbar');
+  const collapser = document.querySelector('#collapser > div');
+  switch (event.data.type) {
+    case 'COFFEE_ENTER':
+      tmpColor = element.style.backgroundColor;
+      const beige = "#8e6a3a";
+      element.style.backgroundColor = beige;
+      collapser.style.backgroundColor = beige;
+      break;
+    case 'COFFEE_EXIT':
+      element.style.backgroundColor = tmpColor;
+      collapser.style.backgroundColor = tmpColor;
+      break;
+  }
+}
 
 WDAIntegration.initialize();
