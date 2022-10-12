@@ -5,7 +5,8 @@ class Integration {
   onUnLoaded() {};
 
   initialize() {
-    window.onunload = this.onUnLoaded;
+    window.addEventListener('beforeunload', this.onUnLoaded);
+    window.addEventListener('unload', this.onUnLoaded);
   }
 
   closeLeftPanel() {
