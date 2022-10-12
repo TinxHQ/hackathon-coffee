@@ -18,7 +18,14 @@ WDAIntegration.onLoaded = async (session, theme, locale, extra) => {
   const conferences = await getConference(session.host, session.token, session.tenantUuid);
   const conference_id = conferences.items.find(conf => conf.extensions.some(ext => ext.exten == CONFERENCE)).id;
   const participants = await getParticipants(session.host, session.token, session.tenantUuid, conference_id);
-  console.log(participants);
+  const table = document.getElementById("members");
+  participants.items.forEach(participant => {
+    const row = table.insertRow(-1);
+    const member = row.insertCell(0);
+    const time = row.insertCell(1);
+    member.innerHTML = participant.caller_id_name;
+    time.innerHTML = "01.00";
+  });
 };
 
 WDAIntegration.onUnLoaded = () => {
