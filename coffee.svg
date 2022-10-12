@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   class="MuiSvgIcon-root jss69"
+   focusable="false"
+   viewBox="0 0 24 24"
+   aria-hidden="true"
+   tabindex="-1"
+   title="LocalCafe"
+   data-ga-event-category="material-icons"
+   data-ga-event-action="click"
+   data-ga-event-label="LocalCafe"
+   version="1.1"
+   id="svg116217"
+   sodipodi:docname="coffe.svg"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs116221" />
+  <sodipodi:namedview
+     id="namedview116219"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="36.25"
+     inkscape:cx="12"
+     inkscape:cy="12.013793"
+     inkscape:window-width="1846"
+     inkscape:window-height="1016"
+     inkscape:window-x="74"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg116217" />
+  <path
+     d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.9 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"
+     id="path116215"
+     style="fill:#ffffff" />
+</svg>

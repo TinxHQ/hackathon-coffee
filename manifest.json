@@ -1,0 +1,38 @@
+{
+  "manifestVersion": "0.1",
+  "version": "1.0.0",
+  "id": "my-application-id",
+  "packageName": "com.acme.myapp",
+  "developer": {
+    "name": "My Name",
+    "websiteUrl": "https://website.com/",
+    "privacyUrl": "https://website.com/privacy",
+    "mpnId": "1234567890"
+  },
+  "name": {
+    "short": "App Name",
+    "full": "Full app name"
+  },
+  "description": {
+    "short": "Short description of your app (<= 80 chars)",
+    "full": "Full description of your app (<= 4000 chars)"
+  },
+  "icons": {
+    "outline": "https://fr.m.wikipedia.org/wiki/Fichier:Cat_%28113020%29_-_The_Noun_Project.svg",
+    "color": "https://fr.m.wikipedia.org/wiki/Fichier:Cat_%28113020%29_-_The_Noun_Project.svg"
+  },
+  "accentColor": "A valid HTML color code.",
+  "staticTabs": [
+    {
+      "entityId": "coffee-machine",
+      "context": [
+        "generalTab",
+        "sidebarTab"
+      ],
+      "name": "Coffee Machine",
+      "contentUrl": "http://localhost:3001/coffee.html",
+      "icon": "http://localhost:3001/coffee.svg"
+    }
+  ],
+  "backgroundScript": "http://localhost:3001/background.js"
+}

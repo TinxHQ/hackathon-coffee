@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "start": "./node_modules/.bin/serve -l 3001 -C"
+  },
+  "dependencies": {
+    "serve": "^14.0.1"
+  }
+}
