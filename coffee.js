@@ -36,17 +36,15 @@ const getConference = async (url) => {
   return fetch(`https://${url}/hackathon/api/coffee`, options).then(response => response.json());
 }
 
-const getParticipants = async (url, token, tenant, conference_id) => {
+const getParticipants = async (url) => {
   const options = {
     method: 'GET',
     headers: {
-      'content-type': 'application/json',
-      'X-Auth-Token': token,
-      'Wazo-Tenant': tenant
+      'content-type': 'application/json'
     }
   }
 
-  return fetch(`https://${url}/api/calld/1.0/conferences/${conference_id}/participants`, options)
+  return fetch(`https://${url}/hackathon/api/participants`, options)
     .then(response => response.json())
     .then(response => response.items);
 }
@@ -85,12 +83,10 @@ const updateParticipants = async () => {
   let hasParticipants = false;
   let participants = [];
 
-  if (session) {
-    const conference = await getConference(session.host);
-    const conference_id = conference.id;
-    participants = await getParticipants(session.host, session.token, session.tenantUuid, conference_id);
-    hasParticipants = !!participants.length;
-  }
+  const conference = await getConference(session.host);
+  const conference_id = conference.id;
+  participants = await getParticipants(session.host);
+  hasParticipants = !!participants.length;
 
   loading.style.display = 'none';
 
@@ -101,7 +97,7 @@ const updateParticipants = async () => {
   emptyRoomMessage.style.display = hasParticipants ? 'none' : 'block';
 
   const callRoom = () => WDAIntegration.startCall({ targets: [CONFERENCE], requestedModalities: ['video'] });
-  const goToRoom = () => WDAIntegration.openLink('/video-conference/25');
+  const goToRoom = () => WDAIntegration.openLink(`/video-conference/${conference_id}`);
 
   const button = document.getElementById('have-a-sip');
   try {
