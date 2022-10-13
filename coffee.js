@@ -27,7 +27,13 @@ const websocketCoffee = (url) => {
   ws.addEventListener('open', (event) => {
     console.log('coffee - websocket connected');
   });
-  ws.addEventListener('message', updateParticipants);
+  ws.addEventListener('message', message => {
+    const data = JSON.parse(message.data);
+
+    if (['conference_participant_left', 'conference_participant_joined'].includes(data.name)) {
+      updateParticipants();
+    }
+  });
 }
 
 const getConference = async (url) => {
