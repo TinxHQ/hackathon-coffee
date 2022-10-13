@@ -1,8 +1,8 @@
-const EVENT_CLOSE_LEFT_PANEL = 'wazo/EVENT_CLOSE_LEFT_PANEL';
-const EVENT_OPEN_LEFT_PANEL = 'wazo/EVENT_OPEN_LEFT_PANEL';
+export const EVENT_CLOSE_LEFT_PANEL = 'wazo/EVENT_CLOSE_LEFT_PANEL';
+export const EVENT_OPEN_LEFT_PANEL = 'wazo/EVENT_OPEN_LEFT_PANEL';
 
 class Integration {
-  onUnLoaded() {};
+  onUnLoaded() { };
 
   initialize() {
     window.addEventListener('beforeunload', this.onUnLoaded);
@@ -17,7 +17,7 @@ class Integration {
     this._sendMessage(EVENT_OPEN_LEFT_PANEL);
   }
 
-  _sendMessage = (type, payload  = {}) => {
+  _sendMessage = (type, payload = {}) => {
     window.parent.postMessage({ type, ...payload }, '*');
   }
 }

@@ -1,4 +1,4 @@
-import Integration from "./Integration.js";
+import Integration, { EVENT_CLOSE_LEFT_PANEL, EVENT_OPEN_LEFT_PANEL } from "./Integration.js";
 
 const EVENT_ON_LOADED = 'wazo/ON_LOADED';
 const EVENT_START_CALL = 'wazo/START_CALL';
@@ -84,6 +84,10 @@ class WDAIntegration extends Integration {
         break;
       case EVENT_ON_LOGOUT:
         this.onLogout();
+        break;
+      case EVENT_CLOSE_LEFT_PANEL:
+      case EVENT_OPEN_LEFT_PANEL:
+        // prevent these two events from ending up in onUnHandledEvent
         break;
       default:
         this.onUnHandledEvent(event);
