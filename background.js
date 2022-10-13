@@ -25,19 +25,19 @@ WDAIntegration.onRouteChanged = location => {
 };
 
 WDAIntegration.onCallIncoming = call => {
-  // console.log('background onCallIncoming', call);
+  console.log('background onCallIncoming', call);
 };
 
 WDAIntegration.onCallAnswered = call => {
-  displayCallInformation(call)
+  console.log('background onCallAnswered', call);
 };
 
 WDAIntegration.onCallMade = call => {
-  displayCallInformation(call)
+  console.log('background onCallMade', call);
 };
 
 WDAIntegration.onCallHangedUp = call => {
-  hideCallInformation();
+  console.log('background onCallHangedUp', call);
 };
 
 WDAIntegration.onWebsocketMessage = (message) => {
