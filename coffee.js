@@ -8,7 +8,7 @@ WDAIntegration.onLoaded = async (inboundSession, theme, locale, extra) => {
   console.log('coffee - onLoaded', { session, theme, locale, extra });
   WDAIntegration.closeLeftPanel();
 
-  updateParticipants(session);
+  updateParticipants();
 };
 
 WDAIntegration.onUnLoaded = () => {
@@ -19,7 +19,7 @@ WDAIntegration.onWebsocketMessage = message => {
   switch (message.name) {
     case 'conference_user_participant_joined':
     case 'conference_user_participant_left':
-      updateParticipants(session);
+      updateParticipants();
       break;
     default:
       console.log('coffee - onWebsocketMessage', message);
@@ -54,17 +54,22 @@ const getParticipants = async (url, token, tenant, conference_id) => {
     .then(response => response.items);
 }
 
-const updateParticipants = async session => {
+const updateParticipants = async () => {
   const loading = document.getElementById('loading');
   loading.style.display = 'block';
 
-  const conferences = await getConference(session.host, session.token, session.tenantUuid);
-  const conference_id = conferences.items.find(conf => conf.extensions.some(ext => ext.exten == CONFERENCE)).id;
-  const participants = await getParticipants(session.host, session.token, session.tenantUuid, conference_id);
+  let hasParticipants = false;
+  let participants = [];
+
+  if (session) {
+    const conferences = await getConference(session.host, session.token, session.tenantUuid);
+    const conference_id = conferences.items.find(conf => conf.extensions.some(ext => ext.exten == CONFERENCE)).id;
+    participants = await getParticipants(session.host, session.token, session.tenantUuid, conference_id);
+    hasParticipants = !!participants.length;
+  }
 
   loading.style.display = 'none';
 
-  const hasParticipants = !!participants.length;
   const table = document.getElementById("members");
   table.style.display = hasParticipants ? 'table' : 'none';
 
