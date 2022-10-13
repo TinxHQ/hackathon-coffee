@@ -3,6 +3,7 @@ import WDAIntegration from './sdk.js';
 let session;
 let ws;
 let timeCheck;
+let playing;
 const timers = {};
 const CONFERENCE = '9300';
 
@@ -11,6 +12,7 @@ WDAIntegration.onLoaded = async (inboundSession, theme, locale, extra) => {
   console.log('coffee - onLoaded', { session, theme, locale, extra });
   WDAIntegration.closeLeftPanel();
 
+  setupMedia();
   websocketCoffee(session.host);
   updateParticipants();
 };
@@ -49,6 +51,16 @@ const getParticipants = async (url) => {
     .then(response => response.items);
 }
 
+const setupMedia = () => {
+  const player = document.querySelector('#media > a');
+  const icon = document.querySelector('#media > a > img');
+
+  player.addEventListener('click', () => {
+    playing = !playing;
+    icon.src = playing ? 'pause.png' : 'play.png';
+  })
+}
+
 const timeFormat = duration => {
   // Hours, minutes and seconds
   var hrs = ~~(duration / 3600);
@@ -81,11 +93,10 @@ const updateParticipants = async () => {
   loading.style.display = 'block';
 
   let hasParticipants = false;
-  let participants = [];
 
   const conference = await getConference(session.host);
   const conference_id = conference.id;
-  participants = await getParticipants(session.host);
+  const participants = await getParticipants(session.host);
   hasParticipants = !!participants.length;
 
   loading.style.display = 'none';
@@ -100,13 +111,16 @@ const updateParticipants = async () => {
   const goToRoom = () => WDAIntegration.openLink(`/video-conference/${conference_id}`);
 
   const button = document.getElementById('have-a-sip');
+
   try {
     button.removeEventListener('click', callRoom);
     button.removeEventListener('click', goToRoom);
   } catch (_) { }
 
-  button.addEventListener('click', hasParticipants ? goToRoom : callRoom)
-  button.innerHTML = hasParticipants ? 'Go to room' : 'Have a SIP!';
+  const userIsInRoom = participants.some(({ caller_id_name: name }) => name === session.profile.firstName);
+
+  button.addEventListener('click', userIsInRoom ? goToRoom : callRoom)
+  button.innerHTML = userIsInRoom ? 'Go to room' : 'Have a SIP!';
 
   console.log('coffee - updating participant list', { numParticipants: participants.length });
 

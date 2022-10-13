@@ -20,12 +20,17 @@
     padding: 0 10vw;
   }
 
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   h1 {
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     font-weight: normal;
     font-size: 8vw;
     text-shadow: 0 10px 10px rgba(0, 0, 0, .5);
-    margin: 40px 0 20px;
   }
 
   #content {
@@ -115,7 +120,13 @@
 
 <body>
 
-  <h1>Coffee Machine</h1>
+  <header>
+    <h1>Coffee Machine</h1>
+
+    <div id="media">
+      <a><img src="play.png" /></a>
+    </div>
+  </header>
 
   <div id="content">
 
