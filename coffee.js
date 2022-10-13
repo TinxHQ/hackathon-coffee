@@ -57,9 +57,13 @@ const getParticipants = async (url) => {
     .then(response => response.items);
 }
 
+const updateMediaState = () => {
+  const icon = document.querySelector('#media > a > img');
+  icon.src = playing ? 'pause.png' : 'play.png';
+}
+
 const setupMedia = () => {
   const player = document.querySelector('#media > a');
-  const icon = document.querySelector('#media > a > img');
 
   player.addEventListener('click', async () => {
     try {
@@ -68,7 +72,7 @@ const setupMedia = () => {
       }
       await fetch(`https://${session.host}/hackathon/api/moh/${playing ? 'stop' : 'play'}`, options);
       playing = !playing;
-      icon.src = playing ? 'pause.png' : 'play.png';
+      updateMediaState();
     } catch (e) {
       console.log(e);
     }
@@ -168,7 +172,8 @@ const updateParticipants = async () => {
 
     // let's remove unused timers
     Object.keys(timers).forEach(callId => {
-      const participantExists = participants.map(p => p.call_id).includes(callId);
+      const participantExists = participants.some(p => p.call_id === callId);
+
       if (!participantExists) {
         delete timers[callId];
       }
@@ -180,6 +185,13 @@ const updateParticipants = async () => {
     }
 
     setMediaVisibility(true);
+
+    // check if music bot is already present
+    if (participants.some(p => p.caller_id_name === 'Music Bot')) {
+      playing = true;
+      updateMediaState();
+    }
+
 
     return;
   }
