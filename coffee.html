@@ -48,6 +48,7 @@
   }
 
   #participants table {
+    display: none;
     width: 100%;
   }
 
@@ -94,6 +95,15 @@
   a#have-a-sip:hover {
     background-color: rgb(210, 170, 82, .8);
   }
+
+  #loading {
+    text-align: center;
+  }
+
+  #empty-room {
+    display: none;
+    text-align: center;
+  }
 </style>
 <script src=""></script>
 
@@ -110,6 +120,9 @@
           <th>Time spent</th>
         </tr>
       </table>
+
+      <div id="empty-room">The coffee machine is waiting for you</div>
+      <div id="loading">Loading</div>
     </div>
 
     <button id="have-a-sip">Have a SIP!</button>
