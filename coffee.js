@@ -2,6 +2,8 @@ import WDAIntegration from './sdk.js';
 
 let session;
 let ws;
+let timeCheck;
+const timers = {};
 const CONFERENCE = '9300';
 
 WDAIntegration.onLoaded = async (inboundSession, theme, locale, extra) => {
@@ -49,6 +51,33 @@ const getParticipants = async (url, token, tenant, conference_id) => {
     .then(response => response.items);
 }
 
+const timeFormat = duration => {
+  // Hours, minutes and seconds
+  var hrs = ~~(duration / 3600);
+  var mins = ~~((duration % 3600) / 60);
+  var secs = ~~duration % 60;
+
+  // Output like "1:01" or "4:03:59" or "123:03:59"
+  var ret = "";
+
+  if (hrs > 0) {
+    ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+  }
+
+  ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+  ret += "" + secs;
+  return ret;
+}
+
+const updateTimers = () => {
+  const now = Date.now();
+  Object.keys(timers).forEach(callId => {
+    const time = document.querySelector(`tr#row-${callId.replace('.', '-')} td.time`);
+    const date = timers[callId];
+    time.innerHTML = `${timeFormat((now - date.getTime()) / 1000)}`;
+  })
+}
+
 const updateParticipants = async () => {
   const loading = document.getElementById('loading');
   loading.style.display = 'block';
@@ -86,17 +115,49 @@ const updateParticipants = async () => {
   console.log('coffee - updating participant list', { numParticipants: participants.length });
 
   if (hasParticipants) {
+    const now = Date.now();
+
     while (table.rows.length > 1) {
       table.deleteRow(table.rows.length - 1);
     }
 
     participants.forEach(participant => {
+      const { call_id: callId, caller_id_name: name, join_time: joinTime } = participant;
+      // let's initiate timers
+      if (!timers[callId]) {
+        timers[callId] = new Date(now - (+joinTime * 1000));
+      }
+
       const row = table.insertRow(-1);
+      row.id = `row-${callId.replace('.', '-')}`;
       const member = row.insertCell(0);
+      member.innerHTML = name;
       const time = row.insertCell(1);
-      member.innerHTML = participant.caller_id_name;
-      time.innerHTML = "01.00";
+      time.className = 'time';
     });
+
+
+    // let's remove unused timers
+    Object.keys(timers).forEach(callId => {
+      const participantExists = participants.map(p => p.call_id).includes(callId);
+      if (!participantExists) {
+        delete timers[callid];
+      }
+    });
+
+    if (!timeCheck) {
+      timeCheck = setInterval(updateTimers, 1000);
+      updateTimers();
+    }
+
+    return;
+  }
+
+  // at this point, we have no participants
+
+  // let's clear the timers update
+  if (timeCheck) {
+    clearInterval(timeCheck);
   }
 }
 
