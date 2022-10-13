@@ -27,6 +27,7 @@ const notificationParticipants = (e) => {
 
 const sendNotificationUser = (name) => {
   const textAlert = `New person on coffee room: ${name}`;
+  if (name == 'Music Bot') { return; }
   const userAgent = navigator.userAgent.toLowerCase();
   if (userAgent.indexOf(' electron/') > -1) {
     const { Notification } = require('electron');
