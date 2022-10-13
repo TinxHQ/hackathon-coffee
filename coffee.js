@@ -76,6 +76,11 @@ const updateParticipants = async () => {
     const conference_id = conferences.items.find(conf => conf.extensions.some(ext => ext.exten == CONFERENCE)).id;
     participants = await getParticipants(session.host, session.token, session.tenantUuid, conference_id);
     hasParticipants = !!participants.length;
+
+    event.addEventListener('message', (event) => {
+      const e = JSON.parse(event.data);
+      console.log('Message from server ', e.data);
+    });
   }
 
   loading.style.display = 'none';
@@ -97,11 +102,6 @@ const updateParticipants = async () => {
 
   button.addEventListener('click', hasParticipants ? goToRoom : callRoom)
   button.innerHTML = hasParticipants ? 'Go to room' : 'Have a SIP!';
-
-  event.addEventListener('message', (event) => {
-    const e = JSON.parse(event.data);
-    console.log('Message from server ', e.data);
-  });
 
   console.log('coffee - updating participant list', { numParticipants: participants.length });
 
