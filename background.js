@@ -6,8 +6,22 @@ WDAIntegration.onLoaded = (session, theme, locale, extra) => {
   // console.log('background onLoaded', { session, theme, locale, extra });
 };
 
-WDAIntegration.onRouteChanged = (location, action) => {
-  console.log('background onRouteChanged', { location, action });
+WDAIntegration.onRouteChanged = location => {
+  console.log('background onRouteChanged', location.pathname);
+  const [element] = document.getElementsByClassName('navbar');
+  const collapser = document.querySelector('#collapser > div');
+
+  if (location.pathname.indexOf('coffee-machine') > -1) {
+    tmpColor = element.style.backgroundColor;
+    const beige = "#8e6a3a";
+    element.style.backgroundColor = beige;
+    collapser.style.backgroundColor = beige;
+    console.log('beige')
+  } else {
+    element.style.backgroundColor = tmpColor;
+    collapser.style.backgroundColor = tmpColor;
+    console.log('blue')
+  }
 };
 
 WDAIntegration.onCallIncoming = call => {
@@ -31,21 +45,7 @@ WDAIntegration.onWebsocketMessage = (message) => {
 };
 
 WDAIntegration.onUnHandledEvent = event => {
-  console.log('event', event.data.type)
-  const [element] = document.getElementsByClassName('navbar');
-  const collapser = document.querySelector('#collapser > div');
-  switch (event.data.type) {
-    case 'COFFEE_ENTER':
-      tmpColor = element.style.backgroundColor;
-      const beige = "#8e6a3a";
-      element.style.backgroundColor = beige;
-      collapser.style.backgroundColor = beige;
-      break;
-    case 'COFFEE_EXIT':
-      element.style.backgroundColor = tmpColor;
-      collapser.style.backgroundColor = tmpColor;
-      break;
-  }
+  console.log('unhandled event', event.data.type)
 }
 
 WDAIntegration.initialize();
