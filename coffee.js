@@ -1,6 +1,7 @@
 import WDAIntegration from './sdk.js';
 
 let session;
+let ws;
 const CONFERENCE = '9300';
 
 WDAIntegration.onLoaded = async (inboundSession, theme, locale, extra) => {
@@ -8,6 +9,7 @@ WDAIntegration.onLoaded = async (inboundSession, theme, locale, extra) => {
   console.log('coffee - onLoaded', { session, theme, locale, extra });
   WDAIntegration.closeLeftPanel();
 
+  websocketCoffee(session.host);
   updateParticipants();
 };
 
@@ -15,24 +17,13 @@ WDAIntegration.onUnLoaded = () => {
   WDAIntegration.openLeftPanel();
 };
 
-WDAIntegration.onWebsocketMessage = message => {
-  switch (message.name) {
-    case 'conference_user_participant_joined':
-    case 'conference_user_participant_left':
-      updateParticipants();
-      break;
-    default:
-      console.log('coffee - onWebsocketMessage', message);
-  }
-};
 
 const websocketCoffee = (url) => {
-  const ws = new WebSocket(`wss://${url}/hackathon/api/ws`);
+  ws = new WebSocket(`wss://${url}/hackathon/api/ws`);
   ws.addEventListener('open', (event) => {
-      console.log('Websocket connected');
+    console.log('coffee - websocket connected');
   });
-
-  return ws;
+  ws.addEventListener('message', updateParticipants);
 }
 
 const getConference = async (url, token, tenant) => {
@@ -71,16 +62,10 @@ const updateParticipants = async () => {
   let participants = [];
 
   if (session) {
-    const event = websocketCoffee(session.host);
     const conferences = await getConference(session.host, session.token, session.tenantUuid);
     const conference_id = conferences.items.find(conf => conf.extensions.some(ext => ext.exten == CONFERENCE)).id;
     participants = await getParticipants(session.host, session.token, session.tenantUuid, conference_id);
     hasParticipants = !!participants.length;
-
-    event.addEventListener('message', (event) => {
-      const e = JSON.parse(event.data);
-      console.log('Message from server ', e.data);
-    });
   }
 
   loading.style.display = 'none';
