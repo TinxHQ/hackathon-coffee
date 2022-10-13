@@ -164,7 +164,7 @@ const updateParticipants = async () => {
     Object.keys(timers).forEach(callId => {
       const participantExists = participants.map(p => p.call_id).includes(callId);
       if (!participantExists) {
-        delete timers[callid];
+        delete timers[callId];
       }
     });
 
