@@ -1,14 +1,12 @@
 import WDAIntegration from './sdk.js';
 
+let session;
 const CONFERENCE = '9300';
 
-WDAIntegration.onLoaded = async (session, theme, locale, extra) => {
+WDAIntegration.onLoaded = async (inboundSession, theme, locale, extra) => {
+  session = inboundSession;
   console.log('coffee - onLoaded', { session, theme, locale, extra });
   WDAIntegration.closeLeftPanel();
-
-  document.getElementById('have-a-sip').addEventListener('click', () => {
-    WDAIntegration.startCall({ targets: [CONFERENCE], requestedModalities: ['video'] })
-  })
 
   updateParticipants(session);
 };
@@ -18,7 +16,14 @@ WDAIntegration.onUnLoaded = () => {
 };
 
 WDAIntegration.onWebsocketMessage = message => {
-  console.log('coffee - onWebsocketMessage', message);
+  switch (message.name) {
+    case 'conference_user_participant_joined':
+    case 'conference_user_participant_left':
+      updateParticipants(session);
+      break;
+    default:
+      console.log('coffee - onWebsocketMessage', message);
+  }
 };
 
 const getConference = async (url, token, tenant) => {
@@ -66,9 +71,25 @@ const updateParticipants = async session => {
   const emptyRoomMessage = document.getElementById('empty-room');
   emptyRoomMessage.style.display = hasParticipants ? 'none' : 'block';
 
+  const callRoom = () => WDAIntegration.startCall({ targets: [CONFERENCE], requestedModalities: ['video'] });
+  const goToRoom = () => WDAIntegration.openLink('/video-conference/25');
+
+  const button = document.getElementById('have-a-sip');
+  try {
+    button.removeEventListener('click', callRoom);
+    button.removeEventListener('click', goToRoom);
+  } catch (_) { }
+
+  button.addEventListener('click', hasParticipants ? goToRoom : callRoom)
+  button.innerHTML = hasParticipants ? 'Go to room' : 'Have a SIP!';
+
   console.log('coffee - updating participant list', { numParticipants: participants.length });
 
   if (hasParticipants) {
+    while (table.rows.length > 1) {
+      table.deleteRow(table.rows.length - 1);
+    }
+
     participants.forEach(participant => {
       const row = table.insertRow(-1);
       const member = row.insertCell(0);
