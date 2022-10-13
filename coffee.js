@@ -26,6 +26,15 @@ WDAIntegration.onWebsocketMessage = message => {
   }
 };
 
+const websocketCoffee = (url) => {
+  const ws = new WebSocket(`wss://${url}/hackathon/api/ws`);
+  ws.addEventListener('open', (event) => {
+      console.log('Websocket connected');
+  });
+
+  return ws;
+}
+
 const getConference = async (url, token, tenant) => {
   const options = {
     method: 'GET',
@@ -62,6 +71,7 @@ const updateParticipants = async () => {
   let participants = [];
 
   if (session) {
+    const event = websocketCoffee(session.host);
     const conferences = await getConference(session.host, session.token, session.tenantUuid);
     const conference_id = conferences.items.find(conf => conf.extensions.some(ext => ext.exten == CONFERENCE)).id;
     participants = await getParticipants(session.host, session.token, session.tenantUuid, conference_id);
@@ -87,6 +97,11 @@ const updateParticipants = async () => {
 
   button.addEventListener('click', hasParticipants ? goToRoom : callRoom)
   button.innerHTML = hasParticipants ? 'Go to room' : 'Have a SIP!';
+
+  event.addEventListener('message', (event) => {
+    const e = JSON.parse(event.data);
+    console.log('Message from server ', e.data);
+  });
 
   console.log('coffee - updating participant list', { numParticipants: participants.length });
 
