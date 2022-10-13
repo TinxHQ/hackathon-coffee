@@ -12,9 +12,9 @@ WDAIntegration.onLoaded = async (inboundSession, theme, locale, extra) => {
   console.log('coffee - onLoaded', { session, theme, locale, extra });
   WDAIntegration.closeLeftPanel();
 
-  setupMedia();
   websocketCoffee(session.host);
   updateParticipants();
+  setupMedia();
 };
 
 WDAIntegration.onUnLoaded = () => {
@@ -55,10 +55,23 @@ const setupMedia = () => {
   const player = document.querySelector('#media > a');
   const icon = document.querySelector('#media > a > img');
 
-  player.addEventListener('click', () => {
-    playing = !playing;
-    icon.src = playing ? 'pause.png' : 'play.png';
+  player.addEventListener('click', async () => {
+    try {
+      const options = {
+        method: 'POST',
+      }
+      await fetch(`https://${session.host}/hackathon/api/moh/${playing ? 'stop' : 'play'}`, options);
+      playing = !playing;
+      icon.src = playing ? 'pause.png' : 'play.png';
+    } catch (e) {
+      console.log(e);
+    }
   })
+}
+
+const setMediaVisibility = show => {
+  const media = document.querySelector('#media');
+  media.style.display = show ? 'block' : 'none';
 }
 
 const timeFormat = duration => {
@@ -160,6 +173,8 @@ const updateParticipants = async () => {
       updateTimers();
     }
 
+    setMediaVisibility(true);
+
     return;
   }
 
@@ -169,6 +184,8 @@ const updateParticipants = async () => {
   if (timeCheck) {
     clearInterval(timeCheck);
   }
+
+  setMediaVisibility(false);
 }
 
 WDAIntegration.initialize();
