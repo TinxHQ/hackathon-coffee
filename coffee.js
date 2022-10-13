@@ -26,17 +26,12 @@ const websocketCoffee = (url) => {
   ws.addEventListener('message', updateParticipants);
 }
 
-const getConference = async (url, token, tenant) => {
+const getConference = async (url) => {
   const options = {
     method: 'GET',
-    headers: {
-      'content-type': 'application/json',
-      'X-Auth-Token': token,
-      'Wazo-Tenant': tenant
-    }
   }
 
-  return fetch(`https://${url}/api/confd/1.1/conferences`, options).then(response => response.json());
+  return fetch(`https://${url}/hackathon/api/coffee`, options).then(response => response.json());
 }
 
 const getParticipants = async (url, token, tenant, conference_id) => {
@@ -62,8 +57,8 @@ const updateParticipants = async () => {
   let participants = [];
 
   if (session) {
-    const conferences = await getConference(session.host, session.token, session.tenantUuid);
-    const conference_id = conferences.items.find(conf => conf.extensions.some(ext => ext.exten == CONFERENCE)).id;
+    const conference = await getConference(session.host);
+    const conference_id = conference.id;
     participants = await getParticipants(session.host, session.token, session.tenantUuid, conference_id);
     hasParticipants = !!participants.length;
   }
