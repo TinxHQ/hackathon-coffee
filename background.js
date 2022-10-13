@@ -11,18 +11,26 @@ WDAIntegration.onRouteChanged = location => {
   const [element] = document.getElementsByClassName('navbar');
   const collapser = document.querySelector('#collapser > div');
 
-  if (location.pathname.indexOf('coffee-machine') > -1) {
+  const atCoffeeMachine = location.pathname.indexOf('coffee-machine') > -1;
+  changeToolbarColor(atCoffeeMachine);
+};
+
+const changeToolbarColor = atCoffeeMachine => {
+  const [element] = document.getElementsByClassName('navbar');
+  const collapser = document.querySelector('#collapser > div');
+
+  if (atCoffeeMachine) {
     tmpColor = element.style.backgroundColor;
     const beige = "#8e6a3a";
     element.style.backgroundColor = beige;
     collapser.style.backgroundColor = beige;
-    console.log('beige')
-  } else {
-    element.style.backgroundColor = tmpColor;
-    collapser.style.backgroundColor = tmpColor;
-    console.log('blue')
+    return;
   }
-};
+
+  element.style.backgroundColor = tmpColor;
+  collapser.style.backgroundColor = tmpColor;
+}
+
 
 WDAIntegration.onCallIncoming = call => {
   console.log('background onCallIncoming', call);
@@ -45,7 +53,9 @@ WDAIntegration.onWebsocketMessage = (message) => {
 };
 
 WDAIntegration.onUnHandledEvent = event => {
-  console.log('unhandled event', event.data.type)
+  if (event.data.source !== 'react-devtools-bridge') {
+    console.log('unhandled event', event)
+  }
 }
 
 WDAIntegration.initialize();

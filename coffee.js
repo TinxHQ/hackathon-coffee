@@ -3,7 +3,7 @@ import WDAIntegration from './sdk.js';
 const CONFERENCE = '9300';
 
 WDAIntegration.onLoaded = async (session, theme, locale, extra) => {
-  console.log('general session', { session, theme, locale, extra });
+  console.log('coffee - onLoaded', { session, theme, locale, extra });
   WDAIntegration.closeLeftPanel();
 
   document.getElementById('have-a-sip').addEventListener('click', () => {
@@ -17,17 +17,8 @@ WDAIntegration.onUnLoaded = () => {
   WDAIntegration.openLeftPanel();
 };
 
-WDAIntegration.onRouteChanged = location => {
-  console.log('background onRouteChanged', location.pathname);
-
-  const atCoffeeMachine = location.pathname.indexOf('coffee-machine') > -1;
-
-  // @FIXME: this is called on every route change; restrict to entering/exiting coffee-machine
-  try {
-    changeToolbarColor(atCoffeeMachine);
-  } catch (_) {
-    // do nothing
-  }
+WDAIntegration.onWebsocketMessage = message => {
+  console.log('coffee - onWebsocketMessage', message);
 };
 
 const getConference = async (url, token, tenant) => {
@@ -75,7 +66,7 @@ const updateParticipants = async session => {
   const emptyRoomMessage = document.getElementById('empty-room');
   emptyRoomMessage.style.display = hasParticipants ? 'none' : 'block';
 
-  console.log('updating participant list', { numParticipants: participants.length });
+  console.log('coffee - updating participant list', { numParticipants: participants.length });
 
   if (hasParticipants) {
     participants.forEach(participant => {
@@ -86,22 +77,6 @@ const updateParticipants = async session => {
       time.innerHTML = "01.00";
     });
   }
-}
-
-const changeToolbarColor = atCoffeeMachine => {
-  const [element] = document.getElementsByClassName('navbar');
-  const collapser = document.querySelector('#collapser > div');
-
-  if (atCoffeeMachine) {
-    tmpColor = element.style.backgroundColor;
-    const beige = "#8e6a3a";
-    element.style.backgroundColor = beige;
-    collapser.style.backgroundColor = beige;
-    return;
-  }
-
-  element.style.backgroundColor = tmpColor;
-  collapser.style.backgroundColor = tmpColor;
 }
 
 WDAIntegration.initialize();
