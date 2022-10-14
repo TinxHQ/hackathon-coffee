@@ -101,6 +101,11 @@
     border-radius: 20px;
     text-align: center;
     display: block;
+    cursor: pointer;
+  }
+
+  #have-a-sip:hover {
+    opacity: .8;
   }
 
   a#have-a-sip:hover {
@@ -117,11 +122,39 @@
   }
 
   #media {
+    display: flex;
+  }
+
+  #volume {
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
     display: none;
+  }
+
+  #volume #up,
+  #volume #down {
+    cursor: pointer;
+  }
+
+  #volume #up:hover,
+  #volume #down:hover {
+    opacity: .8;
+  }
+
+  #volume #up.disabled,
+  #volume #down.disabled {
+    opacity: .3;
+    cursor: default;
+    pointer-events: none;
   }
 
   #media>a {
     cursor: pointer;
+  }
+
+  #media>a:hover {
+    opacity: .8;
   }
 </style>
 <script src=""></script>
@@ -133,6 +166,10 @@
 
     <div id="media">
       <a><img src="play.png" /></a>
+      <div id="volume">
+        <a><img src="plus.png" id="up" /></a>
+        <a><img src="minus.png" id="down" /></a>
+      </div>
     </div>
   </header>
 

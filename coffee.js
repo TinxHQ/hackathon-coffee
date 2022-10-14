@@ -4,6 +4,7 @@ let session;
 let ws;
 let timeCheck;
 let playing;
+let volume = 10;
 const timers = {};
 const CONFERENCE = '9300';
 
@@ -60,6 +61,53 @@ const getParticipants = async (url) => {
 const updateMediaState = () => {
   const icon = document.querySelector('#media > a > img');
   icon.src = playing ? 'pause.png' : 'play.png';
+
+  // let's show/hide volume buttons based on state
+  const volumeButtons = document.querySelector('#volume');
+  volumeButtons.style.display = playing ? 'flex' : 'none';
+}
+
+const updateVolumeButtonStates = () => {
+  const volumeUp = document.querySelector('#volume #up');
+  const volumeDown = document.querySelector('#volume #down');
+
+  volumeUp.className = '';
+  volumeDown.className = '';
+
+  if (volume >= 10) {
+    volumeUp.className = 'disabled';
+  }
+
+  if (volume <= 1) {
+    volumeDown.className = 'disabled';
+  }
+}
+
+const setVolume = async up => {
+  if (up && volume >= 10) {
+    return;
+  }
+
+  if (!up && volume <= 1) {
+    return;
+  }
+
+  try {
+    const newVolume = volume + (up ? 1 : -1);
+
+    const options = {
+      method: 'POST',
+      body: JSON.stringify({ volume: newVolume }),
+    }
+    await fetch(`https://${session.host}/hackathon/api/moh/volume`, options);
+
+    volume = newVolume;
+
+    updateVolumeButtonStates();
+  } catch (e) {
+    console.log('coffee - error setting volume', e)
+  }
+
 }
 
 const setupMedia = () => {
@@ -76,12 +124,18 @@ const setupMedia = () => {
     } catch (e) {
       console.log(e);
     }
-  })
+  });
+
+  const volumeUp = document.querySelector('#volume #up');
+  const volumeDown = document.querySelector('#volume #down');
+
+  volumeUp.addEventListener('click', () => setVolume(true));
+  volumeDown.addEventListener('click', () => setVolume(false));
 }
 
 const setMediaVisibility = show => {
   const media = document.querySelector('#media');
-  media.style.display = show ? 'block' : 'none';
+  media.style.display = show ? 'flex' : 'none';
 }
 
 const timeFormat = duration => {
