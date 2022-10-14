@@ -70,9 +70,11 @@ const updateMediaState = () => {
 const updateVolumeButtonStates = () => {
   const volumeUp = document.querySelector('#volume #up');
   const volumeDown = document.querySelector('#volume #down');
+  const volumeValue = document.querySelector('#volume #value');
 
   volumeUp.className = '';
   volumeDown.className = '';
+  volumeValue.innerHTML = volume;
 
   if (volume >= 10) {
     volumeUp.className = 'disabled';
