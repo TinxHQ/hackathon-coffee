@@ -1,0 +1,88 @@
+{
+  "manifestVersion": "0.1",
+  "version": "1.0.0",
+  "id": "my-application-id",
+  "packageName": "com.acme.myapp",
+  "developer": {
+    "name": "My Name",
+    "websiteUrl": "https://website.com/",
+    "privacyUrl": "https://website.com/privacy",
+    "mpnId": "1234567890"
+  },
+  "name": {
+    "short": "App Name",
+    "full": "Full app name"
+  },
+  "description": {
+    "short": "Short description of your app (<= 80 chars)",
+    "full": "Full description of your app (<= 4000 chars)"
+  },
+  "staticTabs": [
+    {
+      "entityId": "stats",
+      "context": [
+        "generalTab"
+      ],
+      "name": "Stats",
+      "contentUrl": "http://localhost:3001/portal/stats.html"
+    },
+    {
+      "entityId": "stack-dashboard-stats",
+      "context": [
+        "generalPbxTab"
+      ],
+      "name": "My stack stats",
+      "contentUrl": "http://localhost:3001/portal/stats.html"
+    },
+
+    {
+      "entityId": "stack-tab-stats",
+      "context": [
+        "pbxMenu"
+      ],
+      "name": "Stack Stats",
+      "parent": "common.layout.pbxMenu.userManagement",
+      "contentUrl": "http://localhost:3001/portal/stats-stack.html"
+    },
+
+    {
+      "entityId": "sms",
+      "context": [
+        "pbxMenu"
+      ],
+      "name": "SMS",
+      "parent": "common.layout.pbxMenu.settings",
+      "contentUrl": "http://localhost:3001/portal/sms.html"
+    },
+
+    {
+      "entityId": "user-details",
+      "context": [
+        "pbx.users"
+      ],
+      "name": "More user details",
+      "contentUrl": "http://localhost:3001/portal/pbx-user.html"
+    },
+
+    {
+      "entityId": "custom-child",
+      "context": [
+        "pbxMenu"
+      ],
+      "name": "Coffee Room",
+      "parent": "Fun",
+      "parentIcon": "Accessibility",
+      "contentUrl": "http://localhost:3001/portal/coffee.html"
+    },
+    {
+      "entityId": "global-settings",
+      "context": [
+        "globalSettings"
+      ],
+      "name": "Custom global",
+      "icon": "BrightnessHigh",
+      "contentUrl": "http://localhost:3001/portal/global.html"
+    }
+  ],
+  "backgroundScript": "http://localhost:3001/portal/background.js"
+}

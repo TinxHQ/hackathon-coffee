@@ -30,9 +30,9 @@
         "sidebarTab"
       ],
       "name": "Coffee Machine",
-      "contentUrl": "https://quintana.wazo.community/hackathon/coffee.html",
+      "contentUrl": "http://localhost:3001/coffee.html",
       "icon": "https://quintana.wazo.community/hackathon/coffee.svg"
     }
   ],
-  "backgroundScript": "https://quintana.wazo.community/hackathon/background.js"
+  "backgroundScript": "http://localhost:3001/background.js"
 }
