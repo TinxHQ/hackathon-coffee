@@ -4,7 +4,7 @@ let session;
 let ws;
 let timeCheck;
 let playing;
-let volume = 10;
+let volume = 9;
 const timers = {};
 const CONFERENCE = '9300';
 
@@ -104,6 +104,8 @@ const setVolume = async up => {
     volume = newVolume;
 
     updateVolumeButtonStates();
+
+    console.log(`coffee - volume set to ${volume}`);
   } catch (e) {
     console.log('coffee - error setting volume', e)
   }
@@ -131,6 +133,9 @@ const setupMedia = () => {
 
   volumeUp.addEventListener('click', () => setVolume(true));
   volumeDown.addEventListener('click', () => setVolume(false));
+
+  // this should set the volume to 10 -- i know, a little lame
+  setVolume(true);
 }
 
 const setMediaVisibility = show => {
