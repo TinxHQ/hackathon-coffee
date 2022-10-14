@@ -187,10 +187,8 @@ const updateParticipants = async () => {
     setMediaVisibility(true);
 
     // check if music bot is already present
-    if (participants.some(p => p.caller_id_name === 'Music Bot')) {
-      playing = true;
-      updateMediaState();
-    }
+    playing = participants.some(p => p.caller_id_name === 'Music Bot');
+    updateMediaState();
 
 
     return;
