@@ -1,4 +1,4 @@
-import WDAIntegration from './sdk.js';
+import app from 'https://cdn.jsdelivr.net/npm/@wazo/euc-plugins-sdk@latest/lib/esm/app.js';
 
 let session;
 let ws;
@@ -8,18 +8,19 @@ let volume = 9;
 const timers = {};
 const CONFERENCE = '9300';
 
-WDAIntegration.onLoaded = async (inboundSession, theme, locale, extra) => {
+
+app.onLoaded = async (inboundSession, theme, locale, extra) => {
   session = inboundSession;
   console.log('coffee - onLoaded', { session, theme, locale, extra });
-  WDAIntegration.closeLeftPanel();
+  app.closeLeftPanel();
 
   websocketCoffee(session.host);
   updateParticipants();
   setupMedia();
 };
 
-WDAIntegration.onUnLoaded = () => {
-  WDAIntegration.openLeftPanel();
+app.onUnLoaded = () => {
+  app.openLeftPanel();
 };
 
 
@@ -191,8 +192,8 @@ const updateParticipants = async () => {
   const emptyRoomMessage = document.getElementById('empty-room');
   emptyRoomMessage.style.display = hasParticipants ? 'none' : 'block';
 
-  const callRoom = () => WDAIntegration.startCall({ targets: [CONFERENCE], requestedModalities: ['video'] });
-  const goToRoom = () => WDAIntegration.openLink(`/video-conference/${conference_id}`);
+  const callRoom = () => app.startCall({ targets: [CONFERENCE], requestedModalities: ['video'] });
+  const goToRoom = () => app.openLink(`/video-conference/${conference_id}`);
 
   const button = document.getElementById('have-a-sip');
 
@@ -265,4 +266,4 @@ const updateParticipants = async () => {
   setMediaVisibility(false);
 }
 
-WDAIntegration.initialize();
+await app.initialize();

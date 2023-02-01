@@ -1,17 +1,17 @@
 {
   "manifestVersion": "0.1",
   "version": "1.0.0",
-  "id": "my-application-id",
-  "packageName": "com.acme.myapp",
+  "id": "wazo-coffee",
+  "packageName": "com.wazo.coffee",
   "developer": {
-    "name": "My Name",
-    "websiteUrl": "https://website.com/",
-    "privacyUrl": "https://website.com/privacy",
+    "name": "Wazo",
+    "websiteUrl": "https://wazo.io/",
+    "privacyUrl": "https://wazo.io/privacy",
     "mpnId": "1234567890"
   },
   "name": {
-    "short": "App Name",
-    "full": "Full app name"
+    "short": "Wazo Coffee",
+    "full": "Wazo Coffee machine"
   },
   "description": {
     "short": "Short description of your app (<= 80 chars)",
@@ -30,9 +30,9 @@
         "sidebarTab"
       ],
       "name": "Coffee Machine",
-      "contentUrl": "https://quintana.wazo.community/hackathon/coffee.html",
-      "icon": "https://quintana.wazo.community/hackathon/coffee.svg"
+      "contentUrl": "https://quintana.wazo.community/hackathon/wda/coffee.html",
+      "icon": "https://quintana.wazo.community/hackathon/wda/coffee.svg"
     }
   ],
-  "backgroundScript": "http://localhost:3001/background.js"
+  "backgroundScript": "https://quintana.wazo.community/hackathon/wda/background.js"
 }
