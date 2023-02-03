@@ -1,0 +1,15 @@
+[Unit]
+Description=Coffee service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+LimitNOFILE=4096
+WorkingDirectory=/usr/src/hackathon-coffee/backend/
+ExecStart=/usr/bin/env python3 /usr/src/hackathon-coffee/backend/coffee_service.py
+StandardOutput=file:/var/log/coffee.log
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
