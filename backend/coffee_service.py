@@ -22,6 +22,7 @@ from wazo_auth_client import Client as Auth
 from wazo_calld_client import Client as Calld
 from wazo_websocketd_async_client import Client as Websocket
 from wazo_websocketd_async_client.exceptions import AlreadyConnectedException
+from fastapi.staticfiles import StaticFiles
 
 
 logger = logging.getLogger(__name__)
@@ -31,6 +32,8 @@ with open('config.yml') as file:
     configuration = yaml.load(file, yaml.Loader)
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory=".."), name="static")
+
 origins = [
     "*",
 ]
