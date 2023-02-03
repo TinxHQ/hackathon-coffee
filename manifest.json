@@ -14,19 +14,18 @@
     "full": "Wazo Coffee machine"
   },
   "description": {
-    "short": "Short description of your app (<= 80 chars)",
-    "full": "Full description of your app (<= 4000 chars)"
+    "short": "Create a coffee machine for your employee",
+    "full": "create a coffee machine for your employee"
   },
   "icons": {
-    "outline": "https://fr.m.wikipedia.org/wiki/Fichier:Cat_%28113020%29_-_The_Noun_Project.svg",
-    "color": "https://fr.m.wikipedia.org/wiki/Fichier:Cat_%28113020%29_-_The_Noun_Project.svg"
+    "outline": "",
+    "color": ""
   },
-  "accentColor": "A valid HTML color code.",
+  "accentColor": "red",
   "staticTabs": [
     {
       "entityId": "coffee-machine",
       "context": [
-        "generalTab",
         "sidebarTab"
       ],
       "name": "Coffee Machine",

@@ -6,25 +6,10 @@ let timeCheck;
 let playing;
 let volume = 9;
 const timers = {};
-const CONFERENCE = '9300';
 
+const url = 'quintana.wazo.community';
 
-app.onLoaded = async (inboundSession, theme, locale, extra) => {
-  session = inboundSession;
-  console.log('coffee - onLoaded', { session, theme, locale, extra });
-  app.closeLeftPanel();
-
-  websocketCoffee(session.host);
-  updateParticipants();
-  setupMedia();
-};
-
-app.onUnLoaded = () => {
-  app.openLeftPanel();
-};
-
-
-const websocketCoffee = (url) => {
+const websocketCoffee = () => {
   ws = new WebSocket(`wss://${url}/hackathon/api/ws`);
   ws.addEventListener('open', (event) => {
     console.log('coffee - websocket connected');
@@ -38,7 +23,7 @@ const websocketCoffee = (url) => {
   });
 }
 
-const getConference = async (url) => {
+const getConference = async () => {
   const options = {
     method: 'GET',
   }
@@ -46,7 +31,7 @@ const getConference = async (url) => {
   return fetch(`https://${url}/hackathon/api/coffee`, options).then(response => response.json());
 }
 
-const getParticipants = async (url) => {
+const getParticipants = async () => {
   const options = {
     method: 'GET',
     headers: {
@@ -102,7 +87,7 @@ const setVolume = async up => {
       method: 'POST',
       body: JSON.stringify({ volume: newVolume }),
     }
-    await fetch(`https://${session.host}/hackathon/api/moh/volume`, options);
+    await fetch(`https://${url}/hackathon/api/moh/volume`, options);
 
     volume = newVolume;
 
@@ -123,7 +108,7 @@ const setupMedia = () => {
       const options = {
         method: 'POST',
       }
-      await fetch(`https://${session.host}/hackathon/api/moh/${playing ? 'stop' : 'play'}`, options);
+      await fetch(`https://${url}/hackathon/api/moh/${playing ? 'stop' : 'play'}`, options);
       playing = !playing;
       updateMediaState();
     } catch (e) {
@@ -179,9 +164,10 @@ const updateParticipants = async () => {
 
   let hasParticipants = false;
 
-  const conference = await getConference(session.host);
+  const conference = await getConference();
   const conference_id = conference.id;
-  const participants = await getParticipants(session.host);
+  const conference_exten = conference.exten;
+  const participants = await getParticipants();
   hasParticipants = !!participants.length;
 
   loading.style.display = 'none';
@@ -192,7 +178,7 @@ const updateParticipants = async () => {
   const emptyRoomMessage = document.getElementById('empty-room');
   emptyRoomMessage.style.display = hasParticipants ? 'none' : 'block';
 
-  const callRoom = () => app.startCall({ targets: [CONFERENCE], requestedModalities: ['video'] });
+  const callRoom = () => app.startCall({ targets: [conference_exten], requestedModalities: ['video'] });
   const goToRoom = () => app.openLink(`/video-conference/${conference_id}`);
 
   const button = document.getElementById('have-a-sip');
@@ -266,4 +252,28 @@ const updateParticipants = async () => {
   setMediaVisibility(false);
 }
 
-await app.initialize();
+app.onUnLoaded = () => {
+  console.log('app unloaded');
+  app.openLeftPanel();
+  const data = { type: 'coffee/APP_UNLOADED' };
+  window.top.postMessage(data, '*')
+}
+
+const appLoaded = () => {
+  const data = { type: 'coffee/APP_LOADED' };
+  window.top.postMessage(data, '*')
+}
+
+(async () => {
+  await app.initialize();
+  const context = app.getContext();
+  session = context.user;
+
+  console.log('coffee - onLoaded', context);
+  app.closeLeftPanel();
+
+  websocketCoffee();
+  updateParticipants();
+  setupMedia();
+  appLoaded();
+})();

@@ -45,13 +45,18 @@ host = configuration['host']
 username = configuration['username']
 password = configuration['password']
 client_id = 'coffee'
+expiration = 120
+
+# Need to be define in the configuration in portal plugin
+coffee_id = 8
+coffee_exten = 8299
 
 ari_username = 'xivo'
 ari_password = 'Nasheow8Eag'
 ari = ari.connect('http://localhost:5039', ari_username, ari_password)
 
 def get_token(auth, refresh_token):
-    token_data = auth.token.new('wazo_user', expiration=3600, refresh_token=refresh_token, client_id=client_id)
+    token_data = auth.token.new('wazo_user', expiration=expiration, refresh_token=refresh_token, client_id=client_id)
     return token_data['token']
 
 def get_refresh_token(auth):
@@ -59,19 +64,16 @@ def get_refresh_token(auth):
     refresh_token = token_data['refresh_token']
     return token_data['refresh_token']
 
-def get_wazo_api():
-    auth = Auth(host, username=username, password=password, verify_certificate=False)
-    refresh_token = get_refresh_token(auth)
-    calld = Calld(host, token=get_token(auth, refresh_token), verify_certificate=False)
-
-    return auth, calld, refresh_token
+auth = Auth(host, username=username, password=password, verify_certificate=False)
+refresh_token = get_refresh_token(auth)
+calld = Calld(host, token=get_token(auth, refresh_token), verify_certificate=False)
+ws = Websocket(host, token=get_token(auth, refresh_token), verify_certificate=False)
 
 class CoffeeManager:
     def __init__(self):
         self.connections = {}
-        self.coffee_id = 25
-        auth, calld, refresh_token = get_wazo_api()
-        self.calld = calld
+        self.coffee_id = coffee_id
+        self.coffee_exten = coffee_exten
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
@@ -87,14 +89,15 @@ class CoffeeManager:
         del self.connections[id(websocket)]
 
     def get_participants(self):
-        return list_participants(self.calld, self.coffee_id)
+        return list_participants(self.coffee_id)
 
     def add_coffee(self, coffee):
         self.coffee_id = coffee.id
-        return {"id": coffee.id}
+        self.coffee_exten = coffee.exten
+        return {"id": coffee.id, "exten": coffee.exten}
 
     def get_coffee(self):
-        return {"id": self.coffee_id}
+        return {"id": self.coffee_id, "exten": self.coffee_exten}
 
     async def broadcast(self, data: str):
         for connection in self.connections:
@@ -108,6 +111,7 @@ queue = asyncio.Queue()
 
 class Coffee(BaseModel):
     id: str
+    exten: str
 
 
 class MOHVolume(BaseModel):
@@ -167,8 +171,11 @@ def stop_moh():
 @app.post("/moh/volume")
 def set_moh_volume(volume: MOHVolume):
     music_channel_id = get_music_channel_id()
-    ari.channels.setChannelVar(channelId=music_channel_id, variable='VOLUME(RX)', value=str(volume.volume), bypassStasis=True)
-    ari.channels.setChannelVar(channelId=music_channel_id, variable='VOLUME(TX)', value=str(volume.volume), bypassStasis=True)
+    try:
+        ari.channels.setChannelVar(channelId=music_channel_id, variable='VOLUME(RX)', value=str(volume.volume), bypassStasis=True)
+        ari.channels.setChannelVar(channelId=music_channel_id, variable='VOLUME(TX)', value=str(volume.volume), bypassStasis=True)
+    except:
+        print('ARI not connected, volume control is impossible')
 
 
 @app.on_event('startup')
@@ -182,7 +189,7 @@ async def wazo_queue():
         data = await queue.get()
         await manager.broadcast(data)
 
-def list_participants(calld, conference_id):
+def list_participants(conference_id):
     return calld.conferences.list_participants(conference_id)
 
 def parse_participants(participants):
@@ -208,27 +215,14 @@ async def notify(handler):
         await queue.put(handler)
 
 async def session_expired(handler):
-    #renew_token_running()
-    pass
-
-
-def renew_token_running(auth, calld, ws, refresh_token):
-    token_data = auth.token.new('wazo_user', expiration=3600, refresh_token=refresh_token, client_id=client_id)
+    print('session expired')
+    token_data = auth.token.new('wazo_user', expiration=expiration, refresh_token=refresh_token, client_id=client_id)
     token = token_data['token']
-    ws.update_token(token)
     calld.set_token(token)
-
-def renew_token_not_running(auth, calld, ws, refresh_token):
-    token_data = auth.token.new('wazo_user', expiration=3600, refresh_token=refresh_token, client_id=client_id)
-    token = token_data['token']
-    ws.set_token(token)
-    calld.set_token(token)
-
+    auth.set_token(token)
+    await ws.update_token(token)
 
 async def websocket_controller():
-    auth, calld, refresh_token = get_wazo_api()
-    ws = Websocket(host, token=get_token(auth, refresh_token), verify_certificate=False)
-
     ws.on('conference_participant_joined', conference_joined)
     ws.on('conference_participant_left', conference_left)
     ws.on('auth_session_expire_soon', session_expired)
