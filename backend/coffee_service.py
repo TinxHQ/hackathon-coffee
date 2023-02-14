@@ -48,7 +48,7 @@ host = configuration['host']
 username = configuration['username']
 password = configuration['password']
 client_id = 'coffee'
-expiration = 120
+expiration = 3600
 
 # Need to be define in the configuration in portal plugin
 coffee_id = 8
