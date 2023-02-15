@@ -253,7 +253,7 @@ const updateParticipants = async () => {
 }
 
 app.onUnLoaded = () => {
-  console.log('app unloaded');
+  console.log('coffee - app unloaded');
   app.openLeftPanel();
   const data = { type: 'coffee/APP_UNLOADED' };
   window.top.postMessage(data, '*')

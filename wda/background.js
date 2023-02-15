@@ -1,13 +1,12 @@
 import app from 'https://cdn.jsdelivr.net/npm/@wazo/euc-plugins-sdk@latest/lib/esm/app.js';
 
-let ws;
-
 const url = 'quintana.wazo.community';
+const appColor = '#8e6a3a';
 
 const websocketCoffee = () => {
-  ws = new WebSocket(`wss://${url}/hackathon/api/ws`);
+  const ws = new WebSocket(`wss://${url}/hackathon/api/ws`);
   ws.addEventListener('open', (event) => {
-    console.log('background - websocket connected');
+    console.log('coffe background - websocket connected');
   });
   ws.addEventListener('message', notificationParticipants);
 }
@@ -33,7 +32,7 @@ app.onRouteChanged = location => {
 
 const changeToolbarColor = atCoffeeMachine => {
   if (atCoffeeMachine) {
-    app.changeNavBarColor("#8e6a3a");
+    app.changeNavBarColor(appColor);
   } else {
     app.resetNavBarColor();
     app.openLeftPanel();
@@ -41,21 +40,22 @@ const changeToolbarColor = atCoffeeMachine => {
 }
 
 window.onmessage = (e) => {
+  // Wait for fix in unloaded in the sdk
   switch (e.data?.type) {
     case "coffee/APP_LOADED":
+      //app.changeNavBarColor(appColor);
       changeToolbarColor(true);
       break;
     case "coffee/APP_UNLOADED":
-      // Wait for fix in unloaded in the sdk
+      //app.resetNavBarColor();
+      //app.openLeftPanel();
       changeToolbarColor(false);
       break;
   }
 }
 
 (async () => {
+  console.log('coffee - background onLoaded');
   await app.initialize();
-  const context = app.getContext();
-  const session = context.user;
-  console.log('coffee - background onLoaded', context);
   websocketCoffee();
 })();
