@@ -49,6 +49,8 @@ username = configuration['username']
 password = configuration['password']
 client_id = 'coffee'
 expiration = 3600
+user_uuid = None
+token = None
 
 # Need to be define in the configuration in portal plugin
 coffee_id = 8
@@ -58,19 +60,28 @@ ari_username = 'xivo'
 ari_password = 'Nasheow8Eag'
 ari = ari.connect('http://localhost:5039', ari_username, ari_password)
 
-def get_token(auth, refresh_token):
-    token_data = auth.token.new('wazo_user', expiration=expiration, refresh_token=refresh_token, client_id=client_id)
-    return token_data['token']
+def get_token(refresh_token, expired=False):
+    global token
 
-def get_refresh_token(auth):
+    if token == None or expired == True:
+        print('Create new token w/ refresh token')
+        token_data = auth.token.new('wazo_user', expiration=expiration, refresh_token=refresh_token, client_id=client_id)
+        return token_data['token']
+    return token
+
+def get_refresh_token():
+    global user_uuid, token
+
     token_data = auth.token.new('wazo_user', access_type='offline', client_id=client_id)
     refresh_token = token_data['refresh_token']
+    token = token_data['token']
+    user_uuid = token_data['metadata']['uuid']
     return token_data['refresh_token']
 
 auth = Auth(host, username=username, password=password, verify_certificate=False)
-refresh_token = get_refresh_token(auth)
-calld = Calld(host, token=get_token(auth, refresh_token), verify_certificate=False)
-ws = Websocket(host, token=get_token(auth, refresh_token), verify_certificate=False)
+refresh_token = get_refresh_token()
+calld = Calld(host, token=get_token(refresh_token), verify_certificate=False)
+ws = Websocket(host, token=get_token(refresh_token), verify_certificate=False)
 
 class CoffeeManager:
     def __init__(self):
@@ -193,7 +204,12 @@ async def wazo_queue():
         await manager.broadcast(data)
 
 def list_participants(conference_id):
-    return calld.conferences.list_participants(conference_id)
+    participants = []
+    try:
+        participants = calld.conferences.list_participants(conference_id)
+    except:
+        pass
+    return participants
 
 def parse_participants(participants):
     list_participants = []
@@ -218,9 +234,11 @@ async def notify(handler):
         await queue.put(handler)
 
 async def session_expired(handler):
+    if handler['data']['user_uuid'] != user_uuid:
+        return
+
     print('session expired')
-    token_data = auth.token.new('wazo_user', expiration=expiration, refresh_token=refresh_token, client_id=client_id)
-    token = token_data['token']
+    token = get_token(refresh_token, expired=True)
     calld.set_token(token)
     auth.set_token(token)
     await ws.update_token(token)
@@ -236,5 +254,5 @@ if __name__ == '__main__':
     uvicorn.run("coffee_service:app",
                 host="0.0.0.0",
                 port=8001,
-                reload=True
+                reload=False
                 )
