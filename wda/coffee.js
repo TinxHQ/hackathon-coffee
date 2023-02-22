@@ -6,13 +6,14 @@ let timeCheck;
 let playing;
 let volume = 9;
 const timers = {};
+const appColor = '#8e6a3a';
 
 const url = 'quintana.wazo.community';
 
 const websocketCoffee = () => {
   ws = new WebSocket(`wss://${url}/hackathon/api/ws`);
   ws.addEventListener('open', (event) => {
-    console.log('coffee - websocket connected');
+    // console.log('coffee - websocket connected');
   });
   ws.addEventListener('message', message => {
     const data = JSON.parse(message.data);
@@ -92,8 +93,6 @@ const setVolume = async up => {
     volume = newVolume;
 
     updateVolumeButtonStates();
-
-    console.log(`coffee - volume set to ${volume}`);
   } catch (e) {
     console.log('coffee - error setting volume', e)
   }
@@ -112,7 +111,7 @@ const setupMedia = () => {
       playing = !playing;
       updateMediaState();
     } catch (e) {
-      console.log(e);
+      console.log('coffee - error setting media', e);
     }
   });
 
@@ -193,7 +192,7 @@ const updateParticipants = async () => {
   button.addEventListener('click', userIsInRoom ? goToRoom : callRoom)
   button.innerHTML = userIsInRoom ? 'Go to room' : 'Have a SIP!';
 
-  console.log('coffee - updating participant list', { numParticipants: participants.length });
+  // console.log('coffee - updating participant list', { numParticipants: participants.length });
 
   if (hasParticipants) {
     const now = Date.now();
@@ -253,8 +252,9 @@ const updateParticipants = async () => {
 }
 
 app.onUnLoaded = () => {
-  console.log('coffee - app unloaded');
+  // console.log('coffee - app unloaded');
   app.openLeftPanel();
+  app.resetNavBarColor();
   const data = { type: 'coffee/APP_UNLOADED' };
   window.top.postMessage(data, '*')
 }
@@ -269,8 +269,9 @@ const appLoaded = () => {
   const context = app.getContext();
   session = context.user;
 
-  console.log('coffee - onLoaded', context);
+  // console.log('coffee - initialized', context);
   app.closeLeftPanel();
+  app.changeNavBarColor(appColor);
 
   websocketCoffee();
   updateParticipants();

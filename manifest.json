@@ -29,9 +29,9 @@
         "sidebarTab"
       ],
       "name": "Coffee Machine",
-      "contentUrl": "https://quintana.wazo.community/hackathon/wda/coffee.html",
-      "icon": "https://quintana.wazo.community/hackathon/wda/coffee.svg"
+      "contentUrl": "./wda/coffee.html",
+      "icon": "./wda/coffee.svg"
     }
   ],
-  "backgroundScript": "https://quintana.wazo.community/hackathon/wda/background.js"
+  "backgroundScript": "./wda/background.js"
 }
