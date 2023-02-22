@@ -204,12 +204,7 @@ async def wazo_queue():
         await manager.broadcast(data)
 
 def list_participants(conference_id):
-    participants = []
-    try:
-        participants = calld.conferences.list_participants(conference_id)
-    except:
-        pass
-    return participants
+    return calld.conferences.list_participants(conference_id)
 
 def parse_participants(participants):
     list_participants = []
