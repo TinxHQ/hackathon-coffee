@@ -10,18 +10,10 @@ const appColor = '#8e6a3a';
 
 const url = 'quintana.wazo.community';
 
-const websocketCoffee = () => {
-  ws = new WebSocket(`wss://${url}/hackathon/api/ws`);
-  ws.addEventListener('open', (event) => {
-    // console.log('coffee - websocket connected');
-  });
-  ws.addEventListener('message', message => {
-    const data = JSON.parse(message.data);
-
-    if (['conference_participant_left', 'conference_participant_joined'].includes(data.name)) {
-      updateParticipants();
-    }
-  });
+app.onIframeMessage = (msg) => {
+  if (['conference_participant_left', 'conference_participant_joined'].includes(msg.event)) {
+    updateParticipants();
+  }
 }
 
 const getConference = async () => {
@@ -131,13 +123,12 @@ const setMediaVisibility = show => {
 }
 
 const timeFormat = duration => {
-  // Hours, minutes and seconds
-  var hrs = ~~(duration / 3600);
-  var mins = ~~((duration % 3600) / 60);
-  var secs = ~~duration % 60;
+  const hrs = ~~(duration / 3600);
+  const mins = ~~((duration % 3600) / 60);
+  const secs = ~~duration % 60;
 
   // Output like "1:01" or "4:03:59" or "123:03:59"
-  var ret = "";
+  let ret = "";
 
   if (hrs > 0) {
     ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
@@ -192,8 +183,6 @@ const updateParticipants = async () => {
   button.addEventListener('click', userIsInRoom ? goToRoom : callRoom)
   button.innerHTML = userIsInRoom ? 'Go to room' : 'Have a SIP!';
 
-  // console.log('coffee - updating participant list', { numParticipants: participants.length });
-
   if (hasParticipants) {
     const now = Date.now();
 
@@ -241,9 +230,6 @@ const updateParticipants = async () => {
     return;
   }
 
-  // at this point, we have no participants
-
-  // let's clear the timers update
   if (timeCheck) {
     clearInterval(timeCheck);
   }
@@ -261,11 +247,9 @@ const appLoaded = () => {
   const context = app.getContext();
   session = context.user;
 
-  // console.log('coffee - initialized', context);
   app.closeLeftPanel();
   app.changeNavBarColor(appColor);
 
-  websocketCoffee();
   updateParticipants();
   setupMedia();
   appLoaded();

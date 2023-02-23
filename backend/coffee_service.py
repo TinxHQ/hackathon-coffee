@@ -229,7 +229,8 @@ async def notify(handler):
         await queue.put(handler)
 
 async def session_expired(handler):
-    if handler['data']['user_uuid'] != user_uuid:
+    session_user_uuid = handler['data']['user_uuid']
+    if session_user_uuid != user_uuid:
         return
 
     print('session expired')

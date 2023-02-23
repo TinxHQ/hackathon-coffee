@@ -11,9 +11,12 @@ const websocketCoffee = () => {
 }
 
 const notificationParticipants = (e) => {
-  const event = JSON.parse(e.data);
-  if (event.name === "conference_participant_joined") {
-    sendNotificationUser(event.data.caller_id_name);
+  const data = JSON.parse(e.data);
+  if (['conference_participant_left', 'conference_participant_joined'].includes(data.name)) {
+    app.sendMessageToIframe({ event: data.name, data: data.data });
+    if (data.name === "conference_participant_joined") {
+      sendNotificationUser(data.data.caller_id_name);
+    }
   }
 }
 
