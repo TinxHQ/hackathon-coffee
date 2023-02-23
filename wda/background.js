@@ -24,6 +24,12 @@ const sendNotificationUser = (name) => {
   app.displayNotification("Coffee room", textAlert);
 }
 
+app.onAppUnLoaded = (tabId) => {
+  // console.log('bg - onAppUnLoaded', tabId);
+  app.openLeftPanel();
+  app.resetNavBarColor();
+}
+
 (async () => {
   // console.log('coffee - background onLoaded');
   await app.initialize();

@@ -251,14 +251,6 @@ const updateParticipants = async () => {
   setMediaVisibility(false);
 }
 
-app.onUnLoaded = () => {
-  // console.log('coffee - app unloaded');
-  app.openLeftPanel();
-  app.resetNavBarColor();
-  const data = { type: 'coffee/APP_UNLOADED' };
-  window.top.postMessage(data, '*')
-}
-
 const appLoaded = () => {
   const data = { type: 'coffee/APP_LOADED' };
   window.top.postMessage(data, '*')
