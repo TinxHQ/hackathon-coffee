@@ -5,6 +5,7 @@ let ws;
 let timeCheck;
 let playing;
 let volume = 9;
+
 const timers = {};
 const appColor = '#8e6a3a';
 
@@ -19,6 +20,10 @@ app.onIframeMessage = (msg) => {
 const getConference = async () => {
   const options = {
     method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Auth-Token': session.token
+    }
   }
 
   return fetch(`https://${url}/hackathon/api/coffee`, options).then(response => response.json());
@@ -28,7 +33,8 @@ const getParticipants = async () => {
   const options = {
     method: 'GET',
     headers: {
-      'content-type': 'application/json'
+      'content-type': 'application/json',
+      'X-Auth-Token': session.token
     }
   }
 
@@ -78,6 +84,10 @@ const setVolume = async up => {
 
     const options = {
       method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'X-Auth-Token': session.token
+      },
       body: JSON.stringify({ volume: newVolume }),
     }
     await fetch(`https://${url}/hackathon/api/moh/volume`, options);
@@ -98,6 +108,10 @@ const setupMedia = () => {
     try {
       const options = {
         method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'X-Auth-Token': session.token
+        }
       }
       await fetch(`https://${url}/hackathon/api/moh/${playing ? 'stop' : 'play'}`, options);
       playing = !playing;

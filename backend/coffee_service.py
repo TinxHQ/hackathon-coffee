@@ -7,22 +7,23 @@ import uvicorn
 import logging
 import yaml
 import json
-from urllib.parse import parse_qs
 import asyncio
+import aiohttp
 
 from typing import List, Dict, Union
 from uuid import UUID, uuid4
-
-from fastapi import FastAPI, Request, WebSocket
-from fastapi.middleware.cors import CORSMiddleware
-from starlette.websockets import WebSocketDisconnect
+from urllib.parse import parse_qs
 from pydantic import BaseModel
+
+from fastapi import FastAPI, Request, WebSocket, Header, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from starlette.websockets import WebSocketDisconnect
 
 from wazo_auth_client import Client as Auth
 from wazo_calld_client import Client as Calld
 from wazo_websocketd_async_client import Client as Websocket
 from wazo_websocketd_async_client.exceptions import AlreadyConnectedException
-from fastapi.staticfiles import StaticFiles
 
 from mm import Mattermost
 
@@ -81,10 +82,19 @@ def get_refresh_token():
     user_uuid = token_data['metadata']['uuid']
     return token_data['refresh_token']
 
+async def verify_token(x_auth_token: str = Header(default=None)):
+    async with aiohttp.ClientSession() as session:
+        token_url = f'https://{host}/api/auth/0.1/token/{x_auth_token}'
+        async with session.head(token_url) as resp:
+            if resp.status != 204:
+                raise HTTPException(status_code=401, detail="Authentication failed")
+
+
 auth = Auth(host, username=username, password=password, verify_certificate=False)
 refresh_token = get_refresh_token()
 calld = Calld(host, token=get_token(refresh_token), verify_certificate=False)
 ws = Websocket(host, token=get_token(refresh_token), verify_certificate=False)
+
 
 class CoffeeManager:
     def __init__(self):
@@ -136,8 +146,8 @@ class MOHVolume(BaseModel):
     volume: int
 
 
-@app.get("/coffee")
-def get_coffee():
+@app.get("/coffee", dependencies=[Depends(verify_token)])
+async def get_coffee():
     return manager.get_coffee()
 
 
@@ -146,7 +156,7 @@ def add_coffee(coffee: Coffee):
     return manager.add_coffee(coffee)
 
 
-@app.get("/participants")
+@app.get("/participants", dependencies=[Depends(verify_token)])
 def get_participants():
     return manager.get_participants()
 
