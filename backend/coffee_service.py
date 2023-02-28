@@ -24,8 +24,11 @@ from wazo_websocketd_async_client import Client as Websocket
 from wazo_websocketd_async_client.exceptions import AlreadyConnectedException
 from fastapi.staticfiles import StaticFiles
 
+from mm import Mattermost
 
 logger = logging.getLogger(__name__)
+LOG_FORMAT = '%(asctime)s (%(levelname)s) (%(name)s): %(message)s'
+logging.basicConfig(format=LOG_FORMAT)
 #logger.setLevel(logging.DEBUG)
 
 with open('config.yml') as file:
@@ -119,6 +122,7 @@ class CoffeeManager:
             await ws.send_json(data)
 
 
+mattermost = Mattermost(configuration['mattermost'])
 manager = CoffeeManager()
 queue = asyncio.Queue()
 
@@ -194,6 +198,7 @@ def set_moh_volume(volume: MOHVolume):
 
 @app.on_event('startup')
 async def app_startup():
+    mattermost.post('Coffee service is started')
     asyncio.ensure_future(wazo_queue())
     asyncio.ensure_future(websocket_controller())
 
@@ -224,9 +229,9 @@ async def conference_left(handler):
     await notify(handler)
 
 async def notify(handler):
-    conference_id = handler['data']['conference_id']
-    if conference_id == manager.coffee_id:
+    if handler['data']['conference_id'] == manager.coffee_id:
         await queue.put(handler)
+        mattermost.notify(handler, parse_participants(list_participants(manager.coffee_id)))
 
 async def session_expired(handler):
     session_user_uuid = handler['data']['user_uuid']
