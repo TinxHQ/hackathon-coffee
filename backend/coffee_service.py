@@ -35,7 +35,15 @@ logging.basicConfig(format=LOG_FORMAT)
 with open('config.yml') as file:
     configuration = yaml.load(file, yaml.Loader)
 
-app = FastAPI()
+async def verify_token(x_auth_token: str = Header(default=None)):
+    async with aiohttp.ClientSession() as session:
+        token_url = f'https://{host}/api/auth/0.1/token/{x_auth_token}'
+        async with session.head(token_url) as resp:
+            if resp.status != 204:
+                raise HTTPException(status_code=401, detail="Authentication failed")
+
+
+app = FastAPI(dependencies=[Depends(verify_token)])
 app.mount("/static", StaticFiles(directory=".."), name="static")
 
 origins = [
@@ -81,13 +89,6 @@ def get_refresh_token():
     token = token_data['token']
     user_uuid = token_data['metadata']['uuid']
     return token_data['refresh_token']
-
-async def verify_token(x_auth_token: str = Header(default=None)):
-    async with aiohttp.ClientSession() as session:
-        token_url = f'https://{host}/api/auth/0.1/token/{x_auth_token}'
-        async with session.head(token_url) as resp:
-            if resp.status != 204:
-                raise HTTPException(status_code=401, detail="Authentication failed")
 
 
 auth = Auth(host, username=username, password=password, verify_certificate=False)
@@ -146,7 +147,7 @@ class MOHVolume(BaseModel):
     volume: int
 
 
-@app.get("/coffee", dependencies=[Depends(verify_token)])
+@app.get("/coffee")
 async def get_coffee():
     return manager.get_coffee()
 
@@ -156,7 +157,7 @@ def add_coffee(coffee: Coffee):
     return manager.add_coffee(coffee)
 
 
-@app.get("/participants", dependencies=[Depends(verify_token)])
+@app.get("/participants")
 def get_participants():
     return manager.get_participants()
 
@@ -167,7 +168,8 @@ async def websocket_endpoint(websocket: WebSocket):
 
     try:
         while True:
-            await websocket.receive_json()
+            data = await websocket.receive_json()
+            await verify_token(data['X-Auth-Token'])
     except WebSocketDisconnect:
         manager.remove(websocket)
 

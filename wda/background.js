@@ -1,11 +1,18 @@
 import app from 'https://cdn.jsdelivr.net/npm/@wazo/euc-plugins-sdk@latest/lib/esm/app.js';
+import ReconnectingWebSocket from 'https://cdn.jsdelivr.net/npm/reconnecting-websocket@4.4.0/dist/reconnecting-websocket-mjs.js';
 
 const url = 'quintana.wazo.community';
 
-const websocketCoffee = () => {
-  const ws = new WebSocket(`wss://${url}/hackathon/api/ws`);
+const websocketCoffee = (token) => {
+  const ws = new ReconnectingWebSocket(`wss://${url}/hackathon/api/ws`);
   ws.addEventListener('open', (event) => {
-    // console.log('coffe background - websocket connected');
+    console.log('coffe background - websocket connected');
+    ws.send(JSON.stringify({
+      "X-Auth-Token": token
+    }));
+  });
+  ws.addEventListener('close', (event) => {
+    console.log('coffe background - websocket disconnected');
   });
   ws.addEventListener('message', notificationParticipants);
 }
@@ -36,5 +43,7 @@ app.onAppUnLoaded = (tabId) => {
 (async () => {
   // console.log('coffee - background onLoaded');
   await app.initialize();
-  websocketCoffee();
+  const context = app.getContext();
+  const token = context.user.token;
+  websocketCoffee(token);
 })();
