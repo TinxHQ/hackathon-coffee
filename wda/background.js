@@ -1,6 +1,8 @@
-import app from 'https://cdn.jsdelivr.net/npm/@wazo/euc-plugins-sdk@latest/lib/esm/app.js';
+import { App } from 'https://cdn.jsdelivr.net/npm/@wazo/euc-plugins-sdk@latest/lib/esm/app.js';
 import ReconnectingWebSocket from 'https://cdn.jsdelivr.net/npm/reconnecting-websocket@4.4.0/dist/reconnecting-websocket-mjs.js';
 
+
+const app = new App();
 const url = 'quintana.wazo.community';
 
 const websocketCoffee = (token) => {

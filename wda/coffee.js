@@ -1,4 +1,5 @@
-import app from 'https://cdn.jsdelivr.net/npm/@wazo/euc-plugins-sdk@latest/lib/esm/app.js';
+import { App } from 'https://cdn.jsdelivr.net/npm/@wazo/euc-plugins-sdk@latest/lib/esm/app.js';
+
 
 let session;
 let ws;
@@ -8,6 +9,7 @@ let volume = 9;
 
 const timers = {};
 const appColor = '#8e6a3a';
+const app = new App();
 
 const url = 'quintana.wazo.community';
 

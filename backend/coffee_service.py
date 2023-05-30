@@ -19,6 +19,8 @@ from fastapi import FastAPI, Request, WebSocket, Header, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.websockets import WebSocketDisconnect
+from starlette_exporter import handle_openmetrics, PrometheusMiddleware
+
 
 from wazo_auth_client import Client as Auth
 from wazo_calld_client import Client as Calld
@@ -45,6 +47,8 @@ async def verify_token(x_auth_token: str = Header(default=None)):
 
 app = FastAPI(dependencies=[Depends(verify_token)])
 app.mount("/static", StaticFiles(directory=".."), name="static")
+app.add_middleware(PrometheusMiddleware)
+app.add_route('/metrics', handle_openmetrics)
 
 origins = [
     "*",
